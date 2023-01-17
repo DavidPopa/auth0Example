@@ -4,16 +4,15 @@
 
 const express = require("express");
 const path = require("path");
-const { auth, requiresAuth } = require('express-openid-connect');
+const { auth, requiresAuth } = require("express-openid-connect");
 const { create } = require("domain");
-var bodyParser = require('body-parser')
- 
-// create application/json parser
-var jsonParser = bodyParser.json()
- 
-// create application/x-www-form-urlencoded parser
-var urlencodedParser = bodyParser.urlencoded({ extended: false })
+var bodyParser = require("body-parser");
 
+// create application/json parser
+var jsonParser = bodyParser.json();
+
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 require("dotenv").config();
 
@@ -30,17 +29,16 @@ const port =
  *  App Configuration
  */
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "pug");
 
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, "..", "public")));
 
 var options = {
   theme: {
-      logo: './logo.png'
-  }
+    logo: "./logo.png",
+  },
 };
-
 app.use(
   auth({
     issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
@@ -49,7 +47,7 @@ app.use(
     secret: process.env.SESSION_SECRET,
     authRequired: false,
     auth0Logout: true,
-  }),
+  })
 );
 
 app.use((req, res, next) => {
@@ -58,38 +56,33 @@ app.use((req, res, next) => {
   next();
 });
 
-
 /* Plugin */
 
 ///DB
 
-const MONGO_PASSWORD = 'DDcytac9rIpwJ0Xp'
+const MONGO_PASSWORD = "DDcytac9rIpwJ0Xp";
 ///
 
 //DB CONN
 
-const mongo = require('mongodb');
-const bcrypt = require('bcrypt');
+const mongo = require("mongodb");
+const bcrypt = require("bcrypt");
 const { Console } = require("console");
 
 const { MongoClient } = require("mongodb");
 const { connectToServer } = require("../db/conn");
 const connectionString = process.env.ATLAS_URI;
 
-console.log(connectionString)
+console.log(connectionString);
 
 const dbclient = new MongoClient(connectionString, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
 
-
 //
 
-
 //
-
-
 
 /*
    dbclient.connect( 'mongodb+srv://Mandrei:'+MONGO_PASSWORD+'@cluster0.xuf1qrn.mongodb.net/?retryWrites=true&w=majority', function (err,client) {
@@ -102,10 +95,6 @@ const dbclient = new MongoClient(connectionString, {
 */
 
 //let dbo = require("../db/conn.js");
-
-
-
- 
 
 /**
  * Routes Definitions
@@ -131,7 +120,7 @@ app.get("/faq", (req, res) => {
 // > Coming Soon
 
 app.get("/soon", (req, res) => {
-  res.render("comingSoon", { });
+  res.render("comingSoon", {});
 });
 
 // > CarStore (sell)
@@ -141,12 +130,11 @@ app.get("/sellCar", (req, res) => {
 
 // > Profile
 
-app.get('/profile', requiresAuth(),(req, res) => {
-  
- // let ver = dbo.checkVerifyUser(req.oidc.user.email) 
+app.get("/profile", requiresAuth(), (req, res) => {
+  // let ver = dbo.checkVerifyUser(req.oidc.user.email)
   let ver = false;
-  console.log(ver)
-  res.render('profile3',{ user: req.oidc.user, isVerified: ver });
+  console.log(ver);
+  res.render("profile3", { user: req.oidc.user, isVerified: ver });
 });
 
 // > External API
@@ -157,19 +145,18 @@ app.get("/external-api", (req, res) => {
 
 // > Authentication
 
-
-app.get('/sign-up/:page', (req, res) => {
+app.get("/sign-up/:page", (req, res) => {
   const { page } = req.params;
 
   res.oidc.login({
     returnTo: page,
     authorizationParams: {
-      screen_hint: 'signup',
+      screen_hint: "signup",
     },
   });
 });
 
-app.get('/login/:page', (req, res) => {
+app.get("/login/:page", (req, res) => {
   const { page } = req.params;
 
   res.oidc.login({
@@ -177,7 +164,7 @@ app.get('/login/:page', (req, res) => {
   });
 });
 
-app.get('/logout/:page', (req, res) => {
+app.get("/logout/:page", (req, res) => {
   const { page } = req.params;
 
   res.oidc.logout({
@@ -185,22 +172,13 @@ app.get('/logout/:page', (req, res) => {
   });
 });
 
+app.get("/extend", requiresAuth(), (req, res) => {
+  res.render("extend", {});
+}); ///CHANGE THIS
 
-app.get('/extend', requiresAuth(), (req,res) =>{
- 
-
- res.render('extend',{}  
-  
-  );
-  
-});                                     ///CHANGE THIS
-
-
-
-app.post('/updateUser', urlencodedParser, function (req, res) {
-
-  console.log(req.body)
-/*
+app.post("/updateUser", urlencodedParser, function (req, res) {
+  console.log(req.body);
+  /*
   let age = req.body.age
   let country = req.body.country;
   let city = req.body.city;
@@ -211,23 +189,20 @@ app.post('/updateUser', urlencodedParser, function (req, res) {
 
   dbo.updateDataUser(age,country,city,zip,emailActual)  
   */
- 
-  
-  
-  let extra = {age: age,
+
+  let extra = {
+    age: age,
     country: country,
     city: city,
     zip: zip,
-    email : emailActual} 
+    email: emailActual,
+  };
 
-
-
-    res.render('profile3', {
-      user : req.oidc.user,
-      extra: extra
-    });
+  res.render("profile3", {
+    user: req.oidc.user,
+    extra: extra,
   });
-
+});
 
 /**fetch
  * 
@@ -239,13 +214,6 @@ app.post('/updateUser', urlencodedParser, function (req, res) {
  * 
  */
 
- 
-
-
-
-
-
-
 /**
  * Server Activation
  */
@@ -253,3 +221,4 @@ app.post('/updateUser', urlencodedParser, function (req, res) {
 app.listen(port, () => {
   console.log(`Listening to requests on http://localhost:${port}`);
 });
+// npm run ui npm run dev node .\api\server.js  

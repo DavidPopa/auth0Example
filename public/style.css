@@ -75,7 +75,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  align-items: center;
+  gap: 1.2rem;
 }
 .main-nav-list-page {
   margin-right: 9.6rem;
